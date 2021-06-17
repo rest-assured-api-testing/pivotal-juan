@@ -1,8 +1,13 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public class TimeZone{
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public String kind;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public String olson_name;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public String offset;
 
 	public String getKind() {

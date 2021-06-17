@@ -26,10 +26,10 @@ public class ApiStep {
     @Before
     public void createProject() throws JsonProcessingException {
         Project projectTemp = new Project();
-        projectTemp.setName("Project5");
+        projectTemp.setName("Project9");
         ApiRequest apiRequest = new ApiRequest();
         apiRequest.setBaseUri(baseUri);
-//        apiRequest.setToken(userToken);
+        apiRequest.setToken(userToken);
         apiRequest.addHeader("X-TrackerToken",userToken);
         apiRequest.setEndPoint("projects");
         apiRequest.setMethod(ApiMethod.valueOf("POST"));
@@ -41,6 +41,7 @@ public class ApiStep {
     public void iBuildRequest(String method) {
         apiRequest.setBaseUri(baseUri);
         apiRequest.setToken(userToken);
+        apiRequest.addHeader("X-TrackerToken",userToken);
         apiRequest.setMethod(ApiMethod.valueOf(method));
     }
 
@@ -50,10 +51,11 @@ public class ApiStep {
         System.out.println("PROJECT ID "+project.getId().toString());
         apiRequest.addPathParam("projectId", project.getId().toString());
         apiResponse = ApiManager.execute(apiRequest);
+        System.out.println("CODE "+apiResponse.getStatusCode());
     }
 
     @Then("the response status code should be {string}")
-    public void theResponseStatusCodeShouldBe(String arg0) {
+    public void theResponseStatusCodeShouldBe(String statusCode) {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         apiResponse.getResponse().then().log().body();
     }

@@ -102,7 +102,8 @@ public class ProjectTest {
         apiRequest.setBaseUri("https://www.pivotaltracker.com/services/v5");
         apiRequest.setEndPoint("/projects");
         apiRequest.setMethod(ApiMethod.POST);
-        apiRequest.setBody(new ObjectMapper().writeValueAsString(project));
+//        apiRequest.setBody(new ObjectMapper().writeValueAsString(project));
+        apiRequest.setBody(project.getName());
 
 
         ApiResponse apiResponse = ApiManager.execute(apiRequest);
