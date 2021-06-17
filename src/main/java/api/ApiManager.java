@@ -18,8 +18,21 @@ public class ApiManager {
                 .log().all();
     }
 
-    public static Response execute(ApiRequest apiRequest){
-        Response response = buildRequest(apiRequest).request(apiRequest.getMethod().getName(),apiRequest.getEndPoint());
-        return response;
+
+    public static ApiResponse execute(ApiRequest apiRequest){
+        Response response = buildRequest(apiRequest)
+                .request(apiRequest.getMethod().name()
+                        ,apiRequest.getEndPoint());
+
+        return new ApiResponse(response);
+    }
+
+    public static ApiResponse executeWithBody(ApiRequest apiRequest){
+        Response response = buildRequest(apiRequest)
+                .body(apiRequest.getBody())
+                .request(apiRequest.getMethod().name()
+                        ,apiRequest.getEndPoint());
+
+        return new ApiResponse(response);
     }
 }
