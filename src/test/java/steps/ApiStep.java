@@ -51,7 +51,6 @@ public class ApiStep {
         System.out.println("PROJECT ID "+project.getId().toString());
         apiRequest.addPathParam("projectId", project.getId().toString());
         apiResponse = ApiManager.execute(apiRequest);
-        System.out.println("CODE "+apiResponse.getStatusCode());
     }
 
     @Then("the response status code should be {string}")

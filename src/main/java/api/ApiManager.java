@@ -14,7 +14,6 @@ public class ApiManager {
                 .pathParams(apiRequest.getPathParams())
                 .baseUri(apiRequest.getBaseUri())
                 .contentType(ContentType.JSON)
-//                .auth().oauth2(apiRequest.getToken())
                 .log().all();
     }
 
@@ -23,7 +22,6 @@ public class ApiManager {
         Response response = buildRequest(apiRequest)
                 .request(apiRequest.getMethod().name()
                         ,apiRequest.getEndPoint());
-
         return new ApiResponse(response);
     }
 
@@ -32,7 +30,6 @@ public class ApiManager {
                 .body(apiRequest.getBody())
                 .request(apiRequest.getMethod().name()
                         ,apiRequest.getEndPoint());
-
         return new ApiResponse(response);
     }
 }

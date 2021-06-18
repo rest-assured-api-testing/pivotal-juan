@@ -1,36 +1,39 @@
 package entities;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TimeZone{
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public String kind;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public String olson_name;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public String offset;
 
-	public String getKind() {
-		return kind;
+	@JsonProperty("olson_name")
+	private String olsonName;
+
+	@JsonProperty("offset")
+	private String offset;
+
+	@JsonProperty("kind")
+	private String kind;
+
+	public void setOlsonName(String olsonName){
+		this.olsonName = olsonName;
 	}
 
-	public void setKind(String kind) {
-		this.kind = kind;
+	public String getOlsonName(){
+		return olsonName;
 	}
 
-	public String getOlson_name() {
-		return olson_name;
+	public void setOffset(String offset){
+		this.offset = offset;
 	}
 
-	public void setOlson_name(String olson_name) {
-		this.olson_name = olson_name;
-	}
-
-	public String getOffset() {
+	public String getOffset(){
 		return offset;
 	}
 
-	public void setOffset(String offset) {
-		this.offset = offset;
+	public void setKind(String kind){
+		this.kind = kind;
+	}
+
+	public String getKind(){
+		return kind;
 	}
 }
