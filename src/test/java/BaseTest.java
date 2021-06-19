@@ -2,12 +2,13 @@ import api.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.*;
-import io.cucumber.java.bs.A;
 import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -24,6 +25,7 @@ public class BaseTest {
     protected ProjectWebHooks webHooksEndToEnd = new ProjectWebHooks();
     protected AccountMembership accountMembershipEndToEnd = new AccountMembership();
     protected Person personEndToEnd = new Person();
+    protected Task taskEndToEnd = new Task();
 
     @BeforeClass
     public void setup(){
@@ -55,15 +57,40 @@ public class BaseTest {
         workspaceEndToEnd = ApiManager.executeWithBody(apiRequest).getBody(Workspace.class);
     }
 
+    @BeforeMethod(dependsOnMethods={"createdProjectBefore"},onlyForGroups = "createProjectWorkspace")
+    public void createdWorkspaceWithProjectBefore() throws JsonProcessingException {
+        apiRequest.clearPathParams();
+        Workspace workspaceTemp = new Workspace();
+        List<Object> project_ids =new ArrayList<>();
+        workspaceTemp.setName("Workspace20");
+        project_ids.add(projectEndToEnd.getId());
+        workspaceTemp.setProjectIds(project_ids);
+        apiRequest = apiRequestBuilder.withMethod(ApiMethod.POST).withEndpoint("/my/workspaces")
+                .withBody(new ObjectMapper().writeValueAsString(workspaceTemp)).build();
+        workspaceEndToEnd = ApiManager.executeWithBody(apiRequest).getBody(Workspace.class);
+    }
+
     @BeforeMethod(dependsOnMethods={"createdProjectBefore"},onlyForGroups = "createStory")
     public void createdStoryBefore() throws JsonProcessingException {
         apiRequest.clearPathParams();
-        Story storyTemp = new Story();
-        storyTemp.setName("Story temp 1");
+        Story story = new Story();
+        story.setName("new story");
         apiRequest = apiRequestBuilder.withMethod(ApiMethod.POST).withEndpoint("/projects/{projectId}/stories")
                 .withPathParams("projectId", projectEndToEnd.getId().toString())
-                .withBody(new ObjectMapper().writeValueAsString(storyTemp)).build();
+                .withBody(new ObjectMapper().writeValueAsString(story)).build();
         storyEndToEnd = ApiManager.executeWithBody(apiRequest).getBody(Story.class);
+    }
+
+    @BeforeMethod(dependsOnMethods={"createdStoryBefore"},onlyForGroups = "createTask")
+    public void createTaskBefore() throws JsonProcessingException {
+        apiRequest.clearPathParams();
+        Task task = new Task();
+        task.setDescription("new task");
+        apiRequest = apiRequestBuilder.withMethod(ApiMethod.POST).withEndpoint("projects/{projectId}/stories/{storyId}/tasks")
+                .withPathParams("projectId", projectEndToEnd.getId().toString())
+                .withPathParams("storyId", storyEndToEnd.getId().toString())
+                .withBody(new ObjectMapper().writeValueAsString(task)).build();
+        taskEndToEnd = ApiManager.executeWithBody(apiRequest).getBody(Task.class);
     }
 
     @BeforeMethod(dependsOnMethods={"createdProjectBefore"},onlyForGroups = "createEpic")
@@ -121,7 +148,7 @@ public class BaseTest {
     }
 
     @AfterMethod(onlyForGroups = "deleteProject")
-    public void deleteCreatedProjectConfig() {
+    public void deleteCreatedProjectAfter() {
         apiRequest.clearPathParams();
         apiRequest.clearQueryParams();
         apiRequest = apiRequestBuilder.withMethod(ApiMethod.DELETE).withEndpoint("/projects/{projectId}")
@@ -131,7 +158,7 @@ public class BaseTest {
     }
 
     @AfterMethod(dependsOnMethods={"deleteStoryAfter"},onlyForGroups = "deleteProjectStory")
-    public void deleteCreatedProjectStory() {
+    public void deleteCreateProjectStoryAfter() {
         apiRequest.clearPathParams();
         apiRequest = apiRequestBuilder.withMethod(ApiMethod.DELETE).withEndpoint("/projects/{projectId}")
                 .withPathParams("projectId", projectEndToEnd.getId().toString()).build();
@@ -148,8 +175,17 @@ public class BaseTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
+    @AfterMethod(dependsOnMethods={"deleteCreatedProjectAfter"},onlyForGroups = "deleteProjectWorkspace")
+    public void deleteWorkspaceProjectAfter() {
+        apiRequest.clearPathParams();
+        apiRequest = apiRequestBuilder.withMethod(ApiMethod.DELETE).withEndpoint("/my/workspaces/{workspaceId}")
+                .withPathParams("workspaceId", String.valueOf( workspaceEndToEnd.getId())).build();
+        ApiResponse apiResponse = ApiManager.execute(apiRequest);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
+    }
+
     @AfterMethod(onlyForGroups = "deleteMembership")
-    public void deleteMembership() {
+    public void deleteMembershipAfter() {
         apiRequest.clearPathParams();
         apiRequest = apiRequestBuilder.withMethod(ApiMethod.DELETE).withEndpoint("/accounts/{account_id}/memberships/{id}")
                 .withPathParams("account_id",accountEndToEnd.getId().toString())
@@ -159,4 +195,35 @@ public class BaseTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
+
+    @AfterMethod(onlyForGroups = "deleteTask")
+    public void deleteTaskAfter() {
+        apiRequest.clearPathParams();
+        apiRequest = apiRequestBuilder.withMethod(ApiMethod.DELETE).withEndpoint("/projects/{projectId}/stories/{storyId}/tasks/{taskId}")
+                .withPathParams("projectId", projectEndToEnd.getId().toString())
+                .withPathParams("storyId", storyEndToEnd.getId().toString())
+                .withPathParams("taskId", taskEndToEnd.getId().toString()).build();
+        ApiResponse apiResponse = ApiManager.execute(apiRequest);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
+    }
+
+    @AfterMethod(dependsOnMethods={"deleteTaskAfter"},onlyForGroups = "deleteTaskStory")
+    public void deleteTaskStoryAfter() {
+        apiRequest.clearPathParams();
+        apiRequest = apiRequestBuilder.withMethod(ApiMethod.DELETE).withEndpoint("/projects/{projectId}/stories/{storyId}")
+                .withPathParams("projectId", projectEndToEnd.getId().toString())
+                .withPathParams("storyId", storyEndToEnd.getId().toString()).build();
+        ApiResponse apiResponse = ApiManager.execute(apiRequest);
+        apiResponse.getResponse().then().log().all();
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
+    }
+
+    @AfterMethod(dependsOnMethods={"deleteTaskStoryAfter"},onlyForGroups = "deleteTaskStoryProject")
+    public void deleteTaskStoryProjectAfter() {
+        apiRequest.clearPathParams();
+        apiRequest = apiRequestBuilder.withMethod(ApiMethod.DELETE).withEndpoint("/projects/{projectId}")
+                .withPathParams("projectId", projectEndToEnd.getId().toString()).build();
+        ApiResponse apiResponse = ApiManager.execute(apiRequest);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
+    }
 }

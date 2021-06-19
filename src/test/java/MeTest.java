@@ -45,4 +45,12 @@ public class MeTest extends BaseTest{
         ApiResponse apiResponse = ApiManager.execute(apiRequest);
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_FORBIDDEN);
     }
+
+    @Test(groups = {"createProject","deleteProject"})
+    public void getMeWithCopyWrongEndPoint() {
+        apiRequest = apiRequestBuilder.withMethod(ApiMethod.GET).withEndpoint("/my/peopl")
+                .withQueryParams("project_id",String.valueOf(projectEndToEnd.getAccount_id())).build();
+        ApiResponse apiResponse = ApiManager.execute(apiRequest);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
 }
