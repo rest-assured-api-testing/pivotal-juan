@@ -18,6 +18,12 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.3'
     implementation group: 'io.cucumber', name: 'cucumber-java', version: '6.10.4'
     implementation group: 'io.cucumber', name: 'cucumber-testng', version: '6.10.4'
+    // https://mvnrepository.com/artifact/io.cucumber/cucumber-jvm-deps
+    compileOnly group: 'io.cucumber', name: 'cucumber-jvm-deps', version: '1.0.6'
+    // https://mvnrepository.com/artifact/info.cukes/cucumber-junit
+    testImplementation group: 'info.cukes', name: 'cucumber-junit', version: '1.2.5'
+
+
 }
 
 test {

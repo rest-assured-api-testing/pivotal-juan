@@ -29,16 +29,16 @@ public class WorkspaceTest extends BaseTest{
 
     @Test(groups = {"createWorkspace","deleteWorkspace"})
     public void getWorkspaceWithStatusCode200(){
-        apiRequest = apiRequestBuilder.withMethod(ApiMethod.GET).withEndpoint("/my/workspaces/{workspace_id}")
-                .withPathParams("workspace_id", String.valueOf( workspaceEndToEnd.getId())).build();
+        apiRequest = apiRequestBuilder.withMethod(ApiMethod.GET).withEndpoint("/my/workspaces/{workspaceId}")
+                .withPathParams("workspaceId", String.valueOf( workspaceEndToEnd.getId())).build();
         ApiResponse apiResponse = ApiManager.execute(apiRequest);
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
     @Test(groups = {"createWorkspace","deleteWorkspace"})
     public void getWorkspaceWithName(){
-        apiRequest = apiRequestBuilder.withMethod(ApiMethod.GET).withEndpoint("/my/workspaces/{workspace_id}")
-                .withPathParams("workspace_id", String.valueOf( workspaceEndToEnd.getId())).build();
+        apiRequest = apiRequestBuilder.withMethod(ApiMethod.GET).withEndpoint("/my/workspaces/{workspaceId}")
+                .withPathParams("workspaceId", String.valueOf( workspaceEndToEnd.getId())).build();
         ApiResponse apiResponse = ApiManager.execute(apiRequest);
         Workspace workspace = apiResponse.getBody(Workspace.class);
         Assert.assertEquals(workspace.getName(),workspaceEndToEnd.getName());
