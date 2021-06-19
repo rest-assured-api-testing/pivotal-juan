@@ -2,6 +2,8 @@ package api;
 
 import io.restassured.response.Response;
 
+import java.util.List;
+
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 public class ApiResponse {
@@ -25,6 +27,10 @@ public class ApiResponse {
 
     public <T> T getBody(Class<T> cls) {
         return response.getBody().as(cls);
+    }
+
+    public <T> List<T> getBodyList(Class<T> cls) {
+        return response.getBody().jsonPath().getList("",cls);
     }
 
     public void validateSchema(String schema) {

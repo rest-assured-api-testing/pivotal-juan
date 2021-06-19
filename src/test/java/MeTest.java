@@ -1,35 +1,19 @@
 import api.*;
-import entities.Project;
 import org.apache.http.HttpStatus;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+public class MeTest extends BaseTest{
 
-public class MeTest {
-    ApiRequest apiRequest = new ApiRequest();
-    ApiRequestBuilder apiRequestBuilder = new ApiRequestBuilder();
-    Project projectEndToEnd = new Project();
 
-    @BeforeTest
-    public void setupConfiguration(){
-        apiRequest = apiRequestBuilder
-                .withBaseUri("https://www.pivotaltracker.com/services/v5")
-                .withHeaders("X-TrackerToken", "fae1f820733e34ef6385785b843dd339")
-                .withToken("fae1f820733e34ef6385785b843dd339")
-                .build();
-    }
-
-    @Test
+    @Test(groups = {"createProject","deleteProject"})
     public void getMe() {
         apiRequest = apiRequestBuilder.withMethod(ApiMethod.GET).withEndpoint("/me").build();
         ApiResponse apiResponse = ApiManager.execute(apiRequest);
         Assert.assertEquals(apiResponse.getStatusCode(), 200);
     }
 
-    @Test
+    @Test(groups = {"createProject","deleteProject"})
     public void getMeWithName() {
         apiRequest = apiRequestBuilder.withMethod(ApiMethod.GET).withEndpoint("/me").build();
         ApiResponse apiResponse = ApiManager.execute(apiRequest);
@@ -38,7 +22,7 @@ public class MeTest {
 
     }
 
-    @Test
+    @Test(groups = {"createProject","deleteProject"})
     public void getMeWithWrongUserName() {
         apiRequest = apiRequestBuilder.withMethod(ApiMethod.GET).withEndpoint("/me").build();
         ApiResponse apiResponse = ApiManager.execute(apiRequest);
@@ -46,18 +30,18 @@ public class MeTest {
         Assert.assertNotEquals(username,"pablo");
     }
 
-    @Test
+    @Test(groups = {"createProject","deleteProject"})
     public void getMeWithCopy() {
         apiRequest = apiRequestBuilder.withMethod(ApiMethod.GET).withEndpoint("/my/people")
-                .withQueryParams("project_id","2504486").build();
+                .withQueryParams("project_id",projectEndToEnd.getId().toString()).build();
         ApiResponse apiResponse = ApiManager.execute(apiRequest);
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
-    @Test
+    @Test(groups = {"createProject","deleteProject"})
     public void getMeWithCopyWrongId() {
         apiRequest = apiRequestBuilder.withMethod(ApiMethod.GET).withEndpoint("/my/people")
-                .withQueryParams("project_id","250448612").build();
+                .withQueryParams("project_id",String.valueOf(projectEndToEnd.getAccount_id())).build();
         ApiResponse apiResponse = ApiManager.execute(apiRequest);
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_FORBIDDEN);
     }

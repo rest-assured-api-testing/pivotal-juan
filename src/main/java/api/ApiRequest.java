@@ -87,4 +87,12 @@ public class ApiRequest {
     public void addPathParam(final String param, final String value) {
         this.pathParams.put(param,value);
     }
+
+    public void clearPathParams(){
+        this.pathParams.clear();
+    }
+
+    public void clearQueryParams(){
+        this.queryParams.clear();
+    }
 }
